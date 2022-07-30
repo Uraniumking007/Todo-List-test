@@ -11,7 +11,7 @@ async def tasks():
     prisma = Prisma()
     await prisma.connect()
     if request.method == 'GET':
-        tasks_raw = await prisma.tasks.find_many()
+        tasks_raw = await prisma.tasks.find_many(order={'createdAt': 'desc'})
         tasks = [task.dict() for task in tasks_raw]
         await prisma.disconnect()
         return jsonify({'tasks': tasks})
