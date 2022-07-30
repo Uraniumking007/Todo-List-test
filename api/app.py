@@ -39,6 +39,7 @@ async def mutate_task(id: int):
     await prisma.connect()
     if request.method == 'DELETE':
         deleted_task = (await prisma.tasks.delete(where={'id': id})).dict()
+        await prisma.disconnect()
         return jsonify({'task': deleted_task})
 
 
