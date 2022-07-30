@@ -44,4 +44,3 @@ async def mutate_task(id: int):
 
 if __name__ == '__main__':
     app.run()
-    # asyncio.run(main())
