@@ -10,11 +10,13 @@ CORS(app)
 async def tasks():
     prisma = Prisma()
     await prisma.connect()
+
     if request.method == 'GET':
         tasks_raw = await prisma.tasks.find_many(order={'createdAt': 'desc'})
         tasks = [task.dict() for task in tasks_raw]
         await prisma.disconnect()
         return jsonify({'tasks': tasks})
+
     if request.method == 'POST':
         task_text: str = request.json['text']
         reminder: bool = request.json['reminder']
@@ -37,6 +39,7 @@ async def tasks():
 async def mutate_task(id: int):
     prisma = Prisma()
     await prisma.connect()
+
     if request.method == 'DELETE':
         deleted_task = (await prisma.tasks.delete(where={'id': id})).dict()
         await prisma.disconnect()
