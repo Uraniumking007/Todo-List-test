@@ -33,6 +33,15 @@ async def tasks():
         return jsonify({'task': new_task})
 
 
+@app.route('/api/task/<int:id>', methods=['DELETE'])
+async def mutate_task(id: int):
+    prisma = Prisma()
+    await prisma.connect()
+    if request.method == 'DELETE':
+        deleted_task = (await prisma.tasks.delete(where={'id': id})).dict()
+        return jsonify({'task': deleted_task})
+
+
 if __name__ == '__main__':
     app.run()
     # asyncio.run(main())
