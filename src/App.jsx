@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import Header from './conponent/Header';
 import Tasks from './conponent/Tasks';
-import addtask from './conponent/AddTask';
 import AddTask from './conponent/AddTask';
+import axios from 'axios';
 
 const App = () => {
   const [showAddTask, setShowAddTask] = useState(false);
@@ -29,23 +29,27 @@ const App = () => {
 
   // Add Task
 
-  const addTask = (task) => {
-    const id = Math.floor(Math.random() * 1000) + 1;
-    const newTask = { id, ...task };
-    setTasks([...tasks, newTask]);
+  const addTask = async task => {
+    // const id = Math.floor(Math.random() * 1000) + 1;
+    // const newTask = { id, ...task };
+    // setTasks([...tasks, newTask]);
+    const res = await axios.post('http://localhost:5000/api/tasks', {
+      ...task,
+    });
+    console.log(res.data);
   };
 
   // Delete Task
 
-  const deleteTask = (id) => {
-    setTasks(tasks.filter((task) => task.id !== id));
+  const deleteTask = id => {
+    setTasks(tasks.filter(task => task.id !== id));
   };
 
   // Toggle Reminder
 
-  const ToggleReminder = (id) => {
+  const ToggleReminder = id => {
     setTasks(
-      tasks.map((task) =>
+      tasks.map(task =>
         task.id === id ? { ...task, reminder: !task.reminder } : task
       )
     );
