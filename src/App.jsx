@@ -54,7 +54,7 @@ const App = () => {
   // Add Form
 
   return (
-    <div className='App'>
+    <div className='container'>
       <Header
         onAdd={() => setShowAddTask(!showAddTask)}
         showAdd={showAddTask}
