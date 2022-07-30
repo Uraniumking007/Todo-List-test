@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Header from './conponent/Header';
 import Tasks from './conponent/Tasks';
+import addtask from './conponent/addtask';
 
 const App = () => {
   const [tasks, setTasks] = useState([
@@ -40,9 +41,12 @@ const App = () => {
     );
   };
 
+  // Add Form
+
   return (
     <div className='App'>
       <Header />
+      <addtask />
       {tasks.length > 0 ? (
         <Tasks tasks={tasks} onDelete={deleteTask} onToggle={ToggleReminder} />
       ) : (
