@@ -24,6 +24,7 @@ const App = () => {
       ...task,
     });
     setTasks([res.data.task, ...tasks]);
+    setShowAddTask(false);
   };
 
   // Delete Task
