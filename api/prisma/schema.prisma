@@ -8,10 +8,10 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model tasks {
-  id          BigInt    @id @default(autoincrement())
-  createdAt   DateTime? @default(now()) @db.Timestamptz(6)
-  task        String?   @db.VarChar
-  dateAndTime String?   @db.VarChar
-  reminder    Boolean?  @default(false)
+model Task {
+  id        BigInt    @id @default(autoincrement())
+  createdAt DateTime? @default(now()) @db.Timestamptz(6)
+  text      String?   @db.VarChar
+  day       String?   @db.VarChar
+  reminder  Boolean?  @default(false)
 }
