@@ -9,6 +9,8 @@ prisma = "*"
 pyright = "*"
 aioflask = "*"
 flask-cors = "*"
+fastapi = "*"
+uvicorn = "*"
 
 [dev-packages]
 black = "*"
