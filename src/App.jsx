@@ -20,10 +20,10 @@ const App = () => {
   // Add Task
 
   const addTask = async task => {
-    setTasks([res.data.task, ...tasks]);
     const res = await axios.post('http://localhost:8000/api/create/task', {
       ...task,
     });
+    setTasks([res.data.task, ...tasks]);
   };
 
   // Delete Task
