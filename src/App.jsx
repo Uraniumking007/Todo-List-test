@@ -32,7 +32,7 @@ const App = () => {
   const deleteTask = async id => {
     setTasks(tasks.filter(task => task.id !== id));
     const res = await axios.delete(
-      `http://localhost:8000/api/delete/task?i${id}`
+      `http://localhost:8000/api/delete/task?id=${id}`
     );
     console.log({ deletedTask: res.data.task });
   };
