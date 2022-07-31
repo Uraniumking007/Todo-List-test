@@ -1,10 +1,14 @@
+import json
 from typing import Optional
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from prisma import Prisma
 from pydantic import BaseModel
+from redis import Redis
 
 app = FastAPI()
+redis_client = Redis(host='localhost', port=6379, db=0)
 
 origins = ['http://localhost:5173']
 
@@ -25,35 +29,43 @@ class CreateTask(BaseModel):
 
 @app.get('/api/tasks')
 async def tasks():
-    prisma = Prisma()
-    await prisma.connect()
+    tasks = redis_client.get(name='tasks')
+    # print({'tasksFRomRedis': tasks})
+    if tasks is None:
+        prisma = Prisma()
+        await prisma.connect()
 
-    tasks = await prisma.task.find_many(order={'createdAt': 'desc'})
-    tasks = [task.dict() for task in tasks]
-    await prisma.disconnect()
+        tasks = await prisma.task.find_many(order={'createdAt': 'desc'})
+        tasks = [task.dict() for task in tasks]
+        await prisma.disconnect()
+        redis_client.set(
+            name='tasks',
+            value=json.dumps(tasks, default=str),
+        )
     return {
         'message': 'Tasks fetched succesfully',
-        'tasks': tasks,
+        'tasks': json.loads(tasks) if isinstance(tasks, bytes) else tasks,
     }
 
 
 @app.post('/api/create/task')
 async def create_task(task: CreateTask):
+    redis_client.delete('tasks')
+    data = {
+        'text': task.text,
+        'day': task.day,
+        'reminder': task.reminder,
+    }
     prisma = Prisma()
     await prisma.connect()
-    new_task = await prisma.task.create(
-        data={
-            'text': task.text,
-            'day': task.day,
-            'reminder': task.reminder,
-        }
-    )
+    new_task = await prisma.task.create(data)
     await prisma.disconnect()
     return {'message': 'Task created succesfully', 'task': new_task.dict()}
 
 
 @app.delete('/api/delete/task')
 async def delete_task(id: int):
+    redis_client.delete('tasks')
     prisma = Prisma()
     await prisma.connect()
 
