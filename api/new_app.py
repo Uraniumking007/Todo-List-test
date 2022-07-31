@@ -35,6 +35,8 @@ async def tasks():
         prisma = Prisma()
         await prisma.connect()
 
+        print("FETCHING FROM DB")
+
         tasks = await prisma.task.find_many(order={'createdAt': 'desc'})
         tasks = [task.dict() for task in tasks]
         await prisma.disconnect()
@@ -50,7 +52,6 @@ async def tasks():
 
 @app.post('/api/create/task')
 async def create_task(task: CreateTask):
-    redis_client.delete('tasks')
     data = {
         'text': task.text,
         'day': task.day,
@@ -60,21 +61,33 @@ async def create_task(task: CreateTask):
     await prisma.connect()
     new_task = await prisma.task.create(data)
     await prisma.disconnect()
+
+    tasks = redis_client.get('tasks')
+    if tasks is not None:
+        tasks = list(json.loads(tasks))
+        tasks.insert(0, new_task.dict())
+        redis_client.set('tasks', json.dumps(tasks, default=str))
+
     return {'message': 'Task created succesfully', 'task': new_task.dict()}
 
 
 @app.delete('/api/delete/task')
 async def delete_task(id: int):
-    redis_client.delete('tasks')
     prisma = Prisma()
     await prisma.connect()
 
     deleted_task = await prisma.task.delete(where={'id': id})
     await prisma.disconnect()
-    if delete_task is None:
+    if deleted_task is None:
         return {
             'message': f'No task with the id {id}',
         }
+
+    tasks = list(json.loads(redis_client.get('tasks')))
+    tasks = list(filter(lambda task: task['id'] != id, tasks))
+
+    redis_client.set('tasks', json.dumps(tasks, default=str))
+
     return {
         'message': 'Task deleted succesfully',
         'task': deleted_task.dict(),
