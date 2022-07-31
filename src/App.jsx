@@ -10,7 +10,7 @@ const App = () => {
 
   useEffect(() => {
     async function fetchTasks() {
-      const res = await axios.get('http://localhost:5000/api/tasks');
+      const res = await axios.get('http://localhost:8000/api/tasks');
       // const tasks = res.data
       setTasks(res.data.tasks);
     }
@@ -20,18 +20,20 @@ const App = () => {
   // Add Task
 
   const addTask = async task => {
-    const res = await axios.post('http://localhost:5000/api/tasks', {
+    setTasks([res.data.task, ...tasks]);
+    const res = await axios.post('http://localhost:8000/api/create/task', {
       ...task,
     });
-    setTasks([res.data.task, ...tasks]);
   };
 
   // Delete Task
 
   const deleteTask = async id => {
-    const res = await axios.delete(`http://localhost:5000/api/task/${id}`);
-    console.log({ deletedTask: res.data.task });
     setTasks(tasks.filter(task => task.id !== id));
+    const res = await axios.delete(
+      `http://localhost:8000/api/delete/task?i${id}`
+    );
+    console.log({ deletedTask: res.data.task });
   };
 
   // Toggle Reminder
