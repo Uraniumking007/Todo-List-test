@@ -1,4 +1,3 @@
-import json
 from typing import Optional
 
 from fastapi import FastAPI
@@ -29,24 +28,17 @@ class CreateTask(BaseModel):
 
 @app.get('/api/tasks')
 async def tasks():
-    tasks = redis_client.get(name='tasks')
-    # print({'tasksFRomRedis': tasks})
-    if tasks is None:
-        prisma = Prisma()
-        await prisma.connect()
+    prisma = Prisma()
+    await prisma.connect()
 
-        print("FETCHING FROM DB")
+    print("FETCHING FROM DB")
 
-        tasks = await prisma.task.find_many(order={'createdAt': 'desc'})
-        tasks = [task.dict() for task in tasks]
-        await prisma.disconnect()
-        redis_client.set(
-            name='tasks',
-            value=json.dumps(tasks, default=str),
-        )
+    tasks = await prisma.task.find_many(order={'createdAt': 'desc'})
+    tasks = [task.dict() for task in tasks]
+    await prisma.disconnect()
     return {
         'message': 'Tasks fetched succesfully',
-        'tasks': json.loads(tasks) if isinstance(tasks, bytes) else tasks,
+        'tasks': tasks,
     }
 
 
@@ -62,12 +54,6 @@ async def create_task(task: CreateTask):
     new_task = await prisma.task.create(data)
     await prisma.disconnect()
 
-    tasks = redis_client.get('tasks')
-    if tasks is not None:
-        tasks = list(json.loads(tasks))
-        tasks.insert(0, new_task.dict())
-        redis_client.set('tasks', json.dumps(tasks, default=str))
-
     return {'message': 'Task created succesfully', 'task': new_task.dict()}
 
 
@@ -82,11 +68,6 @@ async def delete_task(id: int):
         return {
             'message': f'No task with the id {id}',
         }
-
-    tasks = list(json.loads(redis_client.get('tasks')))
-    tasks = list(filter(lambda task: task['id'] != id, tasks))
-
-    redis_client.set('tasks', json.dumps(tasks, default=str))
 
     return {
         'message': 'Task deleted succesfully',
