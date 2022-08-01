@@ -1,24 +1,30 @@
 import PropTypes from 'prop-types';
+import { Button } from '@mantine/core';
 
-const Button = ({ color, text, onClick }) => {
+const CSButton = ({ color, text, onClick }) => {
   return (
-    <button
-      onClick={onClick}
-      style={{ backgroundColor: color }}
-      className='btn'
-    >
-      {text}
-    </button>
+    <>
+      <Button variant='gradient' gradient={color} onClick={onClick}>
+        {text}
+      </Button>
+    </>
+    // <button
+    //   onClick={onClick}
+    //   style={{ backgroundColor: color }}
+    //   className='btn'
+    // >
+    //   {text}
+    // </button>
   );
 };
 
-Button.defaultProps = {
-  colour: 'black',
+CSButton.defaultProps = {
+  color: 'black',
 };
 
-Button.PropTypes = {
+CSButton.PropTypes = {
   text: PropTypes.string,
   color: PropTypes.string,
 };
 
-export default Button;
+export default CSButton;

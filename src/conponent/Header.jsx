@@ -1,11 +1,15 @@
-import Button from './Button';
+import CSButton from './Button';
 
 const Header = ({ title, onAdd, showAdd }) => {
   return (
     <header className='header'>
       <h1>{title}</h1>
-      <Button
-        color={showAdd ? 'red' : 'green'}
+      <CSButton
+        color={
+          showAdd
+            ? { from: 'orange', to: 'red', deg: 105 }
+            : { from: 'teal', to: 'lime', deg: 105 }
+        }
         text={showAdd ? 'Close' : 'Add'}
         onClick={onAdd}
       />
