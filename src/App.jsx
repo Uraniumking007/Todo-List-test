@@ -19,7 +19,7 @@ const App = () => {
 
   // Add Task
 
-  const addTask = async task => {
+  const addTask = async (task) => {
     const res = await axios.post('http://localhost:8000/api/create/task', {
       ...task,
     });
@@ -29,8 +29,8 @@ const App = () => {
 
   // Delete Task
 
-  const deleteTask = async id => {
-    setTasks(tasks.filter(task => task.id !== id));
+  const deleteTask = async (id) => {
+    setTasks(tasks.filter((task) => task.id !== id));
     const res = await axios.delete(
       `http://localhost:8000/api/delete/task?id=${id}`
     );
@@ -39,9 +39,9 @@ const App = () => {
 
   // Toggle Reminder
 
-  const ToggleReminder = id => {
+  const ToggleReminder = (id) => {
     setTasks(
-      tasks.map(task =>
+      tasks.map((task) =>
         task.id === id ? { ...task, reminder: !task.reminder } : task
       )
     );
